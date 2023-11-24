@@ -1,7 +1,4 @@
-//
-// Created by vlad on 21.11.23.
-//
-
+#include <sstream>
 #include "Speck.h"
 
 Speck::Speck(const Key &key) : key(key) {}
@@ -38,6 +35,16 @@ Block Speck::decrypt_block(const Block &block) const {
     return {left, right};
 }
 
+size_t file_size(std::istream& file) {
+    auto pos = file.tellg();
+
+    file.seekg(0, std::ios::end);
+    size_t fileSize = file.tellg();
+
+    file.seekg(pos);
+    return fileSize;
+}
+
 void Speck::encryptFile(const std::string &inputFile, const std::string &outputFile) const {
     std::ifstream input(inputFile, std::ios::binary);
     std::ofstream output(outputFile, std::ios::binary);
@@ -47,11 +54,30 @@ void Speck::encryptFile(const std::string &inputFile, const std::string &outputF
         return;
     }
 
-    while (!input.eof()) {
-        Block plaintext = {0, 0};
-        input.read(reinterpret_cast<char *>(plaintext.data()), sizeof(Block));
+    size_t fileSize = file_size(input);
 
-        auto bytesRead = input.gcount();
+    input.seekg(0, std::ios::beg);
+    std::stringstream binaryStream(std::ios::in | std::ios::out | std::ios::binary);
+    binaryStream << input.rdbuf();
+
+    size_t blockSize = sizeof(Block);
+    if (fileSize % blockSize != 0) {
+        auto bytesToWrite = 16 - (fileSize % blockSize);
+
+        std::cout << bytesToWrite;
+
+        binaryStream.seekg(0, std::ios::end);
+        for (int i = 0; i < bytesToWrite; ++i) {
+            binaryStream.put(static_cast<char>(bytesToWrite));
+        }
+        binaryStream.seekg(0, std::ios::beg);
+    }
+
+    while (!binaryStream.eof()) {
+        Block plaintext = {0, 0};
+        binaryStream.read(reinterpret_cast<char *>(plaintext.data()), sizeof(Block));
+
+        auto bytesRead = binaryStream.gcount();
 
         if (bytesRead > 0) {
             Block ciphertext = encrypt_block(plaintext);
@@ -63,6 +89,8 @@ void Speck::encryptFile(const std::string &inputFile, const std::string &outputF
     output.close();
 }
 
+
+
 void Speck::decryptFile(const std::string &inputFile, const std::string &outputFile) const {
     std::ifstream input(inputFile, std::ios::binary);
     std::ofstream output(outputFile, std::ios::binary);
@@ -72,6 +100,8 @@ void Speck::decryptFile(const std::string &inputFile, const std::string &outputF
         return;
     }
 
+    std::stringstream binaryStream(std::ios::in | std::ios::out | std::ios::binary);
+
     while (!input.eof()) {
         Block ciphertext = {0, 0};
         input.read(reinterpret_cast<char *>(ciphertext.data()), sizeof(Block));
@@ -80,9 +110,30 @@ void Speck::decryptFile(const std::string &inputFile, const std::string &outputF
 
         if (bytesRead > 0) {
             Block plaintext = decrypt_block(ciphertext);
-            output.write(reinterpret_cast<char *>(plaintext.data()), bytesRead);
+            binaryStream.write(reinterpret_cast<char *>(plaintext.data()), bytesRead);
         }
     }
+    
+    binaryStream.seekg(-1, std::ios::end);
+    char lastByte;
+    binaryStream.get(lastByte);
+
+    binaryStream.seekg(-lastByte, std::ios::end);
+    auto del = true;
+    for (int i = 0; i < lastByte; ++i) {
+        auto s = binaryStream.get();
+
+        if (s != lastByte) {
+            del = false;
+        }
+    }
+
+    auto str = binaryStream.str();
+    if (del) {
+        for (int i = 0; i < lastByte; ++i) {
+            str.pop_back();
+        }
+    }
+
+    output << str;
 }
-
-
