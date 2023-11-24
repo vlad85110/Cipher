@@ -7,11 +7,11 @@ using std::cout;
 using std::endl;
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        return 0;
-    }
 
-    String input = argv[1];
+    String input;
+
+    cout << "Enter your string:" << endl;
+    std::cin >> input;
 
     auto size = std::numeric_limits<size_t>::digits;
     auto m = static_cast<int>(pow(2, size));
