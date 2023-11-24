@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
 
     String input;
 
-    cout << "Enter your string:" << endl;
+    cout << "Enter your string: ";
     std::cin >> input;
 
     auto size = std::numeric_limits<size_t>::digits;
@@ -22,12 +22,12 @@ int main(int argc, char **argv) {
 
 #ifdef ENCODING
     std::string ciphertext = lcg.encrypt(input);
-    std::cout << ciphertext << std::endl;
+    std::cout << "Result: " <<  ciphertext << std::endl;
 #endif
 
 #ifdef DECODING
     std::string decryptedText = lcg.decrypt(input);
-    std::cout << decryptedText << std::endl;
+    std::cout << "Result: " << decryptedText << std::endl;
 #endif
 
     return 0;
