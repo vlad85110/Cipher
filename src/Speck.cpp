@@ -63,9 +63,7 @@ void Speck::encryptFile(const std::string &inputFile, const std::string &outputF
     size_t blockSize = sizeof(Block);
     if (fileSize % blockSize != 0) {
         auto bytesToWrite = 16 - (fileSize % blockSize);
-
-        std::cout << bytesToWrite;
-
+        
         binaryStream.seekg(0, std::ios::end);
         for (int i = 0; i < bytesToWrite; ++i) {
             binaryStream.put(static_cast<char>(bytesToWrite));
@@ -113,7 +111,7 @@ void Speck::decryptFile(const std::string &inputFile, const std::string &outputF
             binaryStream.write(reinterpret_cast<char *>(plaintext.data()), bytesRead);
         }
     }
-    
+
     binaryStream.seekg(-1, std::ios::end);
     char lastByte;
     binaryStream.get(lastByte);
