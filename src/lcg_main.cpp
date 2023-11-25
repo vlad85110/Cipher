@@ -6,8 +6,7 @@
 using std::cout;
 using std::endl;
 
-int main(int argc, char **argv) {
-
+int main() {
     String input;
 
     cout << "Enter your string: ";
@@ -21,12 +20,12 @@ int main(int argc, char **argv) {
     LCG lcg(a, c, m, x0);
 
 #ifdef ENCODING
-    std::string ciphertext = lcg.encrypt(input);
+    auto ciphertext = lcg.encrypt(input);
     std::cout << "Result: " <<  ciphertext << std::endl;
 #endif
 
 #ifdef DECODING
-    std::string decryptedText = lcg.decrypt(input);
+    auto decryptedText = lcg.decrypt(input);
     std::cout << "Result: " << decryptedText << std::endl;
 #endif
 

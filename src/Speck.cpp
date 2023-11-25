@@ -87,8 +87,6 @@ void Speck::encryptFile(const std::string &inputFile, const std::string &outputF
     output.close();
 }
 
-
-
 void Speck::decryptFile(const std::string &inputFile, const std::string &outputFile) const {
     std::ifstream input(inputFile, std::ios::binary);
     std::ofstream output(outputFile, std::ios::binary);

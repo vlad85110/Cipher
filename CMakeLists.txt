@@ -7,6 +7,7 @@ include_directories(include)
 
 set(LCG_FILES src/LCG.cpp)
 set(SPECK_FILES src/Speck.cpp)
+set(HASH_FILES src/JenkinsHash.cpp)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -33,6 +34,7 @@ if(DECODING)
     target_compile_definitions(speck_decode PRIVATE DECODING)
 endif()
 
+add_executable(jenkins_hash src/hash_main.cpp ${HASH_FILES})
 
 enable_testing()
 add_executable(
@@ -41,6 +43,8 @@ add_executable(
         test/speck_tests.cc
         ${LCG_FILES}
         ${SPECK_FILES}
+        src/JenkinsHash.cpp
+        src/hash_main.cpp
 )
 target_link_libraries(
         cipher_tests
