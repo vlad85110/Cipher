@@ -44,7 +44,6 @@ add_executable(
         ${LCG_FILES}
         ${SPECK_FILES}
         src/JenkinsHash.cpp
-        src/hash_main.cpp
 )
 target_link_libraries(
         cipher_tests
