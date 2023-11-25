@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(infobez_lab2)
+project(Cipher)
 
 set(CMAKE_CXX_STANDARD 17)
 
